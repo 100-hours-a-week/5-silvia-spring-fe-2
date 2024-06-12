@@ -60,7 +60,11 @@ const PostCard = () => {
             try {
                 const response = await fetch('http://localhost:3001/api/comments');
                 const commentsData = await response.json();
-                setComments(commentsData.users);
+                if (Array.isArray(commentsData)) {
+                    setComments(commentsData);
+                } else {
+                    setComments([]);
+                }
             } catch (error) {
                 console.error('Error fetching comments:', error);
                 setErrorLabel('댓글을 가져오는 중 오류가 발생했습니다.');
@@ -132,13 +136,13 @@ const PostCard = () => {
             </div>
             <div className="PostCardsContainer">
                 {currentPosts.map((post) => {
-                    const { id, user_id, title, article, post_picture, likes, create_dt } = post;
-                    const formattedDate = create_dt.split('T')[0];
+                    const { id, user_id, title, article, post_picture, likes, create_at } = post;
+                    const formattedDate = create_at.split('T')[0];
 
                     const author = users.find(user => user.user_id === user_id);
                     const authorName = author ? author.nickname : 'Unknown';
 
-                    const postComments = comments.filter(comment => comment.post_id === id.toString());
+                    const postComments = comments.filter(comment => comment.post_id === id); // Ensure comments are filtered correctly
                     const commentCount = postComments.length;
 
                     return (
